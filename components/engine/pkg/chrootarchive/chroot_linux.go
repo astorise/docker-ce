@@ -33,7 +33,10 @@ func chroot(path string) (err error) {
 	//   even though this should be relatively small window here `slave` should
 	//   not cause any problems.
 	if err := mount.MakeRSlave("/"); err != nil {
-		return err
+		// make everything in new ns private
+		if err := mount.MakeRPrivate("/"); err != nil {
+			return err
+	}
 	}
 
 	if mounted, _ := mount.Mounted(path); !mounted {
